@@ -1,0 +1,112 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import 'tailwind.extend.css';
+
+html {
+  overflow-x: -moz-hidden-unscrollable;
+  height: 100%;
+}
+
+@layer base {
+  body {
+    @apply bg-blue-200/20 dark:bg-slate-900;
+  }
+
+  div.navbar {
+    @apply bg-slate-800 dark:bg-slate-800/10;
+  }
+}
+
+
+
+body {
+  -ms-overflow-style: none;
+  height: 100%;
+  width: calc(100vw + 18px);
+  overflow: auto;
+  overflow-x: hidden;
+  background: rgba(248, 250, 253, 0.2);
+}
+
+input[type='radio']:not(:checked):hover {
+  cursor: pointer;
+}
+
+input[type='checkbox']:hover {
+  cursor: pointer;
+}
+
+.scroll-to-top {
+  position: fixed;
+  right: 2rem;
+  bottom: 4rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  text-align: center;
+  color: #fff;
+  background: rgba(90, 92, 105, 0.5);
+  line-height: 46px;
+  z-index: 100;
+}
+
+.tip span {
+  position: relative;
+  display: block;
+}
+
+.tip span:hover {
+  cursor: pointer;
+}
+
+.tip span:hover:before,
+.tip span:hover:after {
+  opacity: 1;
+}
+
+.tip span:before {
+  background: rgba(178, 69, 69, 0.9);
+  color: white;
+  font-weight: 500;
+  border: #ad2121 2.5px solid;
+  border-radius: 15px;
+  padding: .8em 1em;
+  position: absolute;
+  left: 100%;
+  top: -90%;
+  margin-left: 14px;
+  white-space: pre;
+}
+
+.tip span:after {
+  content: attr(data-tooltip);
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent #ad2121 transparent transparent;
+}
+
+.tip span:before,
+.tip span:after {
+  opacity: 0;
+  @include transition(opacity .3s ease-out);
+}
+
+.tip span.sf:before {
+  content: "作者名稱只能輸入英文且大小寫不分，\A精確模式請直接輸入完整姓氏（如: Kao），\A亦可輸入完整姓名簡寫（如： Kao h.-y.）。";
+}
+
+.table td,
+.table th {
+  padding: 0.75rem;
+}
+
+.navbar {
+  height: 8vh;
+}
+
+.mainContainer {
+  height: 92vh;
+}
