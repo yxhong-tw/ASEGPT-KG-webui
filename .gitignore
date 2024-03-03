@@ -147,3 +147,8 @@ __pycache__/
 *.njsproj
 *.sln
 *.sw?
+
+# Models, RAG storages and row data
+backend/*/models/
+backend/*/storage/
+backend/*/data/*.json
