@@ -150,5 +150,5 @@ __pycache__/
 
 # Models, RAG storages and row data
 backend/*/models/
-backend/*/storage/
+backend/*/storages/
 backend/*/data/*.json
