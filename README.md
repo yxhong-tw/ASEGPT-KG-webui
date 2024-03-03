@@ -2,8 +2,6 @@
 
 # Screenshots
 
-![frontend](/screenshots/frontend.png)
-
 # Getting started
 
 Local Development (allows for updated changes on page refresh)
