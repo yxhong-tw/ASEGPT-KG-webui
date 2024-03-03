@@ -1,11 +1,11 @@
 # ASEGPT-KG webui
 
-|  | Service name |
-| ---- | ---- |
-|  **Frontend**    |  Next.js + TailwindCSS    |
-|  **Backend**    |   Next.js (SSR) + FastAPI   |
-| **RAG vector database** | NebulaGraph |
-| **RAG generator** | Mistral |
+|                               | Service name            |
+| ----------------------------- | ----------------------- |
+| **Frontend**            | Next.js + TailwindCSS   |
+| **Backend**             | Next.js (SSR) + FastAPI |
+| **RAG vector database** | NebulaGraph             |
+| **RAG generator**       | Mistral                 |
 
 ## Screenshots
 
@@ -20,7 +20,7 @@
 First, install the NebulaGraph and start the service.
 
 ```bash
-sh start-nebula.sh
+sh setup-nebula.sh
 ```
 
 Local Development (allows for updated changes on page refresh)
