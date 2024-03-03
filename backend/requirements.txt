@@ -1,4 +1,15 @@
 fastapi[all]
 python-jose[cryptography]
-passlib
-psycopg2-binary
+yapf
+python-dotenv
+pyvis
+networkx
+transformers
+langchain
+accelerate
+bitsandbytes
+sentencepiece
+nebula3-python
+llama-index >= 0.10.0
+llama-index-core >= 0.10.0
+llama-index-graph-stores-nebula
