@@ -2,6 +2,12 @@
 
 # Screenshots
 
+![Case Study 1](./screenshots/frontend-case-study-1.png)
+
+![Case Study 2](./screenshots/frontend-case-study-2.png)
+
+![Case Study 3](./screenshots/frontend-case-study-3.png)
+
 # Getting started
 
 Local Development (allows for updated changes on page refresh)
