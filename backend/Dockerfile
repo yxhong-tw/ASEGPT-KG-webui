@@ -10,5 +10,5 @@ COPY ./src /backend/app
 
 # TODO: upgrade this to a production command
 # https://www.uvicorn.org/deployment/#gunicorn
-
-CMD [ "/bin/bash", "-c", "python3 /backend/app/migrate.py && uvicorn app.main:app --host 0.0.0.0 --port 4000"]
+# CMD [ "/bin/bash", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 4000 WORKERS_PER_CORE=2"]
+CMD [ "/bin/bash", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 4000"]
