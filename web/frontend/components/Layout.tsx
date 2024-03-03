@@ -2,8 +2,8 @@ import Head from 'next/head';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PageTopButton from '@/components/Pagetop';
-// import LoadingSpinner from '@/components/LoadingSpinner/LoadingSpinner';
-// import Blocker from '@/components/blocker';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import Blocker from '@/components/Blocker';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -39,14 +39,14 @@ export default function Layout(props: LayoutProps) {
                 <Navbar selectedIdx={selectedIdx} />
                 <main id="page-top" className="mainContainer w-full">
                     {children}
-                    {/* {openPanel === null ? null : (
+                    {openPanel === null ? null : (
                         <Blocker
                             display={openPanel}
                             style={{ backgroundColor: 'rgba(0, 0, 0, .2)' }}
                         >
                             <LoadingSpinner />
                         </Blocker>
-                    )} */}
+                    )}
                 </main>
                 <Footer />
             </div>
