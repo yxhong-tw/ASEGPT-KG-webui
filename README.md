@@ -1,4 +1,4 @@
-# ASEGPT-KG webui
+# ASEGPT-KG WebUI
 
 |                               | Service name            |
 | ----------------------------- | ----------------------- |
