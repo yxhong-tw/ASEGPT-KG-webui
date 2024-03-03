@@ -6,13 +6,17 @@ interface NavbarProps {
     selectedIdx?: number;
 }
 
-export default class Navbar extends Component<NavbarProps> {
+interface NavbarState {
+    mode: 'light' | 'dark';
+}
+
+export default class Navbar extends Component<NavbarProps, NavbarState> {
     constructor(props: NavbarProps) {
         super(props);
 
         this.state = {
             mode: 'light',
-        };
+        } as NavbarState;
     }
 
     _activateSelected(target: number = 0) {
@@ -55,7 +59,7 @@ export default class Navbar extends Component<NavbarProps> {
                             <div className="hidden sm:block sm:ml-6 relative tracking-wide text-center">
                                 <div className="flex space-x-4 last:ml-20 gap-3">
                                     <Link
-                                        href="/"
+                                        href="/kg"
                                         className={
                                             this._activateSelected(0) +
                                             basicLinkStyle
