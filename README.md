@@ -3,7 +3,7 @@
 Frontend: Next.js + TailwindCSS <br />
 Backend: Next.js (SSR) + FastAPI
 
-# Screenshots
+## Screenshots
 
 ![Case Study 1](./screenshots/frontend-case-study-1.png)
 
@@ -11,7 +11,7 @@ Backend: Next.js (SSR) + FastAPI
 
 ![Case Study 3](./screenshots/frontend-case-study-3.png)
 
-# Getting started
+## Getting started
 
 Local Development (allows for updated changes on page refresh)
 
