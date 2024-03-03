@@ -1,7 +1,3 @@
-# Make Me Touch Grass
-
-A simple webapp to encourage people to do productive things!
-
 ## Getting Started
 
 Install dependencies:
