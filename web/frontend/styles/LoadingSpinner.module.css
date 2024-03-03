@@ -1,0 +1,21 @@
+.loader {
+    animation: spin 2s linear infinite;
+    border: 16px solid #1E1E1C;
+    border-top: 16px solid #AE9F4B;
+    box-shadow: 0 0 15px #AE9F4B;
+    @apply w-24 h-24 rounded-full
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        background-color: #1E1E1C;
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
