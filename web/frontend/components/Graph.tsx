@@ -3,6 +3,7 @@ import { Options, Edge, Node } from 'vis-network/standalone/esm/vis-network';
 import useVisNetwork from '@/hooks/useVisNetwork';
 
 interface GraphProps {
+    rowData: {'response': string, 'relevant_nodes': {}}
     nodes: Node[];
     edges: Edge[];
     options: Options;
@@ -12,7 +13,7 @@ interface GraphProps {
 export { type Options, type Edge, type Node };
 
 export default function Graph(props: GraphProps) {
-    const { nodes, edges, options, handleSelectNode } = props;
+    const { rowData, nodes, edges, options, handleSelectNode } = props;
     const { ref, network } = useVisNetwork({
         options,
         edges,
@@ -29,7 +30,7 @@ export default function Graph(props: GraphProps) {
 
     network?.on('selectNode', (params) => {
         const node = params.nodes[0];
-        const nodeOptions = network.body.nodes[node].options;
+        const nodeOptions = (network as any).body.nodes[node].options;
         const nodeData = nodeOptions.data;
 
         handleSelectNode && handleSelectNode(nodeOptions);
@@ -42,19 +43,16 @@ export default function Graph(props: GraphProps) {
                 <button className="btn btn-primary" onClick={handleClick}>
                     Resize
                 </button>
-                <button className="btn btn-primary" onClick={handleClick}>
-                    Resize
-                </button>
             </div>
-            <div className={'w-full h-full relative top-0 p-3 '} ref={ref} />
+            <div className="w-full h-full relative top-0 p-3" ref={ref} />
             <div
-                className="w-full p-8 absolute left-0 bottom-0 bg-gray-200 shadow-sm cursor-pointer rounded-2xl transition-[height] duration-700"
+                className="w-full p-8 leading-loose absolute left-0 bottom-0 bg-gray-200 shadow-sm cursor-pointer rounded-2xl transition-[height] duration-700 overflow-y-scroll"
                 style={{
                     height: isCollapsed ? '1%' : '33%',
                 }}
                 onClick={() => setIsCollapsed(!isCollapsed)}
             >
-                test
+                {rowData.response}
             </div>
         </div>
     );
