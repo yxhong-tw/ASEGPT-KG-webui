@@ -136,3 +136,14 @@ nebula*/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
