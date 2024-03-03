@@ -13,6 +13,12 @@ Backend: Next.js (SSR) + FastAPI
 
 ## Getting started
 
+First, install the NebulaGraph and start the service.
+
+```bash
+sh start-nebula.sh
+```
+
 Local Development (allows for updated changes on page refresh)
 
 ```bash
