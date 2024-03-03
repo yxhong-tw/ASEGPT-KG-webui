@@ -1,0 +1,9 @@
+.blocker {
+    @apply w-screen h-screen hidden fixed top-0 left-0 z-100 bg-black opacity-75 text-center align-middle;
+}
+
+.blocker:before {
+    content: '';
+    margin-right: -0.05em;
+    @apply h-full inline-block align-middle;
+}
