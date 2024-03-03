@@ -1,6 +1,6 @@
 # ASEGPT-KG webui
 
-Frontend: Next.js + TailwindCSS
+Frontend: Next.js + TailwindCSS <br />
 Backend: Next.js (SSR) + FastAPI
 
 # Screenshots
