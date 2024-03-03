@@ -1,5 +1,8 @@
 # ASEGPT-KG webui
 
+Frontend: Next.js + TailwindCSS
+Backend: Next.js (SSR) + FastAPI
+
 # Screenshots
 
 ![Case Study 1](./screenshots/frontend-case-study-1.png)
