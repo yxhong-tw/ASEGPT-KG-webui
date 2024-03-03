@@ -1,7 +1,11 @@
 # ASEGPT-KG webui
 
-Frontend: Next.js + TailwindCSS <br />
-Backend: Next.js (SSR) + FastAPI
+|  | Service name |
+| ---- | ---- |
+|  **Frontend**    |  Next.js + TailwindCSS    |
+|  **Backend**    |   Next.js (SSR) + FastAPI   |
+| **RAG vector database** | NebulaGraph |
+| **RAG generator** | Mistral |
 
 ## Screenshots
 
