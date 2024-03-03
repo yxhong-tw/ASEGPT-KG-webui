@@ -1,65 +1,28 @@
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Layout from '@/components/Layout';
-import Graph, { Options, Edge, Node } from '@/components/Graph';
-import { graphTestData } from '@/constants/graphTestData';
+
 
 export default function Home() {
-    const nodes: Node[] = graphTestData.nodes;
-    const edges: Edge[] = graphTestData.edges;
-    const options: Options = {
-        locale: 'tw',
-        nodes: {
-            shape: 'dot',
-            scaling: {
-                customScalingFunction: function (min, max, total, value) {
-                    if (value && total) return (value / total) * 0.5;
-                    return min || 5;
-                },
-                min: 5,
-                max: 300,
-            },
-            interaction: { hover: true },
-        },
-        edges: {
-            scaling: {
-                customScalingFunction: function (min, max, total, value) {
-                    if (value && total) return value / total;
-                    return min || 1;
-                },
-                min: 1,
-                max: 10,
-            },
-            font: {
-                // Set to the default colors as per the documentation
-                color: '#343434',
-                strokeColor: '#ffffff',
-            },
-        },
+    const router = useRouter();
+
+    const _search = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const inputElement = document.getElementById('base-input') as HTMLInputElement;
+        const query = inputElement.value;
+
+        if (query.trim()) {
+            router.push(`/kg?query=${query}`);
+        }
     };
 
-    const [selectedNode, setSelectedNode] = useState<Node | null>(null);
-
     return (
-        <Layout selectedIdx={0}>
-            <div className="h-full flex flex-wrap p-7">
-                <div
-                    className="p-8 bg-white rounded-2xl shadow "
-                    style={{ width: '45%' }}
-                >
-                    <div>{selectedNode?.label}</div>
-                </div>
-                <div className="h-full" style={{ width: '1.5%' }}></div>
-                <div
-                    className="h-full bg-white rounded-2xl shadow relative "
-                    style={{ width: '52.5%' }}
-                >
-                    <Graph
-                        nodes={nodes}
-                        edges={edges}
-                        options={options}
-                        handleSelectNode={setSelectedNode}
-                    />
-                </div>
+        <Layout selectedIdx={-1}>
+            <div className="flex flex-wrap p-7 mx-12">
+                <form className="mb-5 inline-block w-11/12" onSubmit={_search}>
+                    <label htmlFor="base-input" className="block my-3 text-lg font-medium text-gray-900 dark:text-white">請輸入欲查詢問題：</label>
+                    <input type="text" id="base-input" className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 inline-block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+                    <button type="submit" className="my-5 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Query</button>
+                </form>
             </div>
         </Layout>
     );
