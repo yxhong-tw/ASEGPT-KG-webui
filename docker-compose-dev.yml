@@ -1,6 +1,8 @@
 services:
     reverseproxy:
-        build: reverseproxy
+        build:
+            dockerfile: Dockerfile.dev
+            context: ./reverseproxy
         ports:
             - 8080:8080
         restart: always
