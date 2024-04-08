@@ -41,7 +41,9 @@ services:
             resources:
                 reservations:
                     devices:
-                        - capabilities: [gpu]
+                        - driver: nvidia
+                          count: all
+                          capabilities: [gpu]
 
 networks:
     nebula-docker-compose_nebula-net:
