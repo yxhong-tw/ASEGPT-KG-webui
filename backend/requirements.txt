@@ -13,3 +13,4 @@ nebula3-python
 llama-index == 0.10.12
 llama-index-core == 0.10.12
 llama-index-graph-stores-nebula
+llama-index-llms-langchain
