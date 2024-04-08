@@ -1,72 +1,101 @@
-import os
 from typing import Any, List, Mapping, Optional
 
 from langchain.llms.base import LLM
 from llama_index.core import QueryBundle
-from llama_index.core.retrievers import BaseRetriever, KGTableRetriever, VectorIndexRetriever
+from llama_index.core.retrievers import (
+    BaseRetriever,
+    KGTableRetriever,
+    VectorIndexRetriever,
+)
 from llama_index.core.schema import NodeWithScore
-from transformers import AutoModelForCausalLM, LlamaTokenizer, pipeline
+from transformers import AutoModelForCausalLM, LlamaTokenizer, Pipeline, pipeline
 
 
-def load_model(model_path: str,
+def load_model(model_name_or_path: str,
+               tokenizer_name_or_path: str,
                load_in_8bit: bool = False,
                load_in_4bit: bool = False):
-    tokenizer = LlamaTokenizer.from_pretrained(model_path)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_path,
-        load_in_8bit=load_in_8bit,
-        # load_in_4bit=load_in_4bit,
-        device_map='auto')
+    tokenizer = LlamaTokenizer.from_pretrained(tokenizer_name_or_path)
+    model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
+                                                 load_in_8bit=load_in_8bit,
+                                                 load_in_4bit=load_in_4bit)
+
     return model, tokenizer
 
 
 class CustomLLM(LLM):
+    model_name: str = None
+    model_folder_path: str = None
 
-    def __init__(self):
+    model: AutoModelForCausalLM = None
+    tokenizer: LlamaTokenizer = None
+    generation_pipeline: Pipeline = None
 
-        model_name = f'{os.getcwd()}/app/models/triplet_rationale_chatml_qlora/merged'
-        self.model, self.tokenizer = load_model(model_name, load_in_8bit=True)
-        self.pipeline = pipeline(
-            task='text-generation',
-            model=self.model,
-            tokenizer=self.tokenizer,
-        )
+    temperature: float = 0.1
+    top_p: float = 0.8
+    top_k: int = 30
+    num_beams: int = 4
+    max_new_tokens: int = 4096
+    repetition_penalty: float = 1.3
 
-        self.temperature = 0.1
-        self.top_p = 0.8
-        self.top_k = 30
-        self.num_beams = 4
-        self.max_new_tokens = 4096
-        self.repetition_penalty = 1.3
+    def __init__(self,
+                 model_path: str,
+                 tokenizer_path: str,
+                 temperature=0.1,
+                 top_p=0.8,
+                 top_k=30,
+                 num_beams=4,
+                 repetition_penalty=1.3,
+                 max_new_tokens=4096):
+        super(CustomLLM, self).__init__()
 
-    def set_params(self,
-                   temperature=0.1,
-                   top_p=0.8,
-                   top_k=30,
-                   num_beams=4,
-                   max_new_tokens=4096):
-        super().__init__()
+        self.model, self.tokenizer = load_model(model_path,
+                                                tokenizer_path,
+                                                load_in_4bit=True,
+                                                load_in_8bit=False)
+        self.generation_pipeline = pipeline('text-generation',
+                                            model=self.model,
+                                            tokenizer=self.tokenizer)
+
+        self.model_name = model_path
+        self.model_folder_path = model_path
+
         self.temperature = temperature
         self.top_p = top_p
         self.top_k = top_k
         self.num_beams = num_beams
         self.max_new_tokens = max_new_tokens
+        self.repetition_penalty = repetition_penalty
 
-    def _call(self, prompt: str, stop: Optional[List[str]] = None) -> str:
-        prompt_len = len(prompt)
-        response = self.pipeline(prompt,
-                                 max_new_tokens=self.max_new_tokens,
-                                 repetition_penalty=self.repetition_penalty,
-                                 temperature=self.temperature,
-                                 top_p=self.top_p,
-                                 top_k=self.top_k,
-                                 num_beams=self.num_beams,
-                                 stop_sequence=['.'])[0]['generated_text']
-        return response[prompt_len:]
+    def _call(self,
+              prompt: str,
+              stop: Optional[List[str]] = None,
+              **kwargs) -> str:
+        params = {**self._get_model_default_parameters, **kwargs}
+        response = self.generation_pipeline(prompt,
+                                            **params)[0]['generated_text']
+        return response
+
+    @property
+    def _get_model_default_parameters(self):
+        return {
+            'temperature': self.temperature,
+            'top_p': self.top_p,
+            'top_k': self.top_k,
+            'num_beams': self.num_beams,
+            'max_new_tokens': self.max_new_tokens,
+            'repetition_penalty': self.repetition_penalty,
+        }
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
-        return {'name_of_model': self.model_name}
+        """Get the identifying parameters."""
+
+        return {
+            'model_name': self.model_name,
+            'model_path': self.model_folder_path,
+            'model_parameters': self._get_model_default_parameters
+        }
 
     @property
     def _llm_type(self) -> str:
