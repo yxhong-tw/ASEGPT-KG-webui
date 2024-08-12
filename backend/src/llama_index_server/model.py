@@ -1,5 +1,6 @@
 from typing import Any, List, Mapping, Optional
 
+import torch
 from langchain.llms.base import LLM
 from llama_index.core import QueryBundle
 from llama_index.core.retrievers import (
@@ -8,7 +9,13 @@ from llama_index.core.retrievers import (
     VectorIndexRetriever,
 )
 from llama_index.core.schema import NodeWithScore
-from transformers import AutoModelForCausalLM, LlamaTokenizer, Pipeline, pipeline
+from transformers import (
+    AutoModelForCausalLM,
+    BitsAndBytesConfig,
+    LlamaTokenizer,
+    Pipeline,
+    pipeline,
+)
 
 
 def load_model(model_name_or_path: str,
@@ -16,9 +23,16 @@ def load_model(model_name_or_path: str,
                load_in_8bit: bool = False,
                load_in_4bit: bool = False):
     tokenizer = LlamaTokenizer.from_pretrained(tokenizer_name_or_path)
-    model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                                 load_in_8bit=load_in_8bit,
-                                                 load_in_4bit=load_in_4bit)
+
+    quantization_config = BitsAndBytesConfig(
+        load_in_4bit=load_in_4bit,
+        load_in_8bit=load_in_8bit,
+        bnb_4bit_quant_type='nf4',
+        bnb_4bit_use_double_quant=True,
+        bnb_4bit_compute_dtype=torch.bfloat16)
+    model = AutoModelForCausalLM.from_pretrained(
+        model_name_or_path, quantization_config=quantization_config)
+    model = model.bfloat16()
 
     return model, tokenizer
 
@@ -55,7 +69,8 @@ class CustomLLM(LLM):
                                                 load_in_8bit=False)
         self.generation_pipeline = pipeline('text-generation',
                                             model=self.model,
-                                            tokenizer=self.tokenizer)
+                                            tokenizer=self.tokenizer,
+                                            device_map='auto')
 
         self.model_name = model_path
         self.model_folder_path = model_path
@@ -108,20 +123,22 @@ class CustomRetriever(BaseRetriever):
         self,
         vector_retriever: VectorIndexRetriever,
         kg_retriever: KGTableRetriever,
-        mode: str = "OR",
+        mode: str = 'OR',
     ) -> None:
         """Init params."""
 
         self._vector_retriever = vector_retriever
         self._kg_retriever = kg_retriever
-        if mode not in ("AND", "OR"):
-            raise ValueError("Invalid mode.")
+        if mode not in ('AND', 'OR'):
+            raise ValueError('Invalid mode.')
         self._mode = mode
 
     def _retrieve(self, query_bundle: QueryBundle) -> List[NodeWithScore]:
         """Retrieve nodes given query."""
 
         vector_nodes = self._vector_retriever.retrieve(query_bundle)
+
+        query_bundle.query_str = query_bundle.query_str[:510]
         kg_nodes = self._kg_retriever.retrieve(query_bundle)
 
         vector_ids = {n.node.node_id for n in vector_nodes}

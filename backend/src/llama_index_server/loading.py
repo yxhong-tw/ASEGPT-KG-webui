@@ -1,11 +1,13 @@
 import json
 import os
-from typing import List, Literal, Tuple, Union
+from typing import List, Literal, Union
 
+import torch
 from dotenv import load_dotenv
 from llama_index.core import (
     Document,
     KnowledgeGraphIndex,
+    PromptTemplate,
     ServiceContext,
     Settings,
     StorageContext,
@@ -18,8 +20,11 @@ from llama_index.core.indices.base import BaseIndex
 from llama_index.core.query_engine import BaseQueryEngine, RetrieverQueryEngine
 from llama_index.core.retrievers import KGTableRetriever, VectorIndexRetriever
 from llama_index.core.tools import QueryEngineTool
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.graph_stores.nebula import NebulaGraphStore
+from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.llms.openai import OpenAI
+from llama_index.llms.vllm import Vllm
 from nebula3.Config import Config
 from nebula3.gclient.net import ConnectionPool
 
@@ -27,9 +32,9 @@ from .constants import (
     NEBULA_EDGE_TYPES,
     NEBULA_REL_PROP_NAMES,
     NEBULA_STORE_TAGS,
-    SYSTEM_PROMPT,
+    SYSTEM_PROMPT_SEMICONDUCTOR_ROLE,
 )
-from .model import CustomLLM, CustomRetriever
+from .model_v2 import CustomLLM, CustomRetriever
 
 load_dotenv()
 
@@ -63,18 +68,67 @@ def set_global_service(chunk_size: int = 4096,
     if using_openai_gpt:
         llm = OpenAI(temperature=0.1, model='gpt-3.5-turbo')
     else:
-        llm = CustomLLM(model_path=local_model_path,
-                        tokenizer_path=local_tokenizer_path,
-                        max_new_tokens=2048)
+        # llm = CustomLLM(model_path=local_model_path,
+        #                 tokenizer_path=local_tokenizer_path,
+        #                 max_new_tokens=4096)
 
-    # embed_model = LangchainEmbedding(HuggingFaceEmbeddings(model_name='sentence-transformers/all-mpnet-base-v2'))
+        # llm = Vllm(
+        #     model=local_model_path,
+        #     tensor_parallel_size=2,
+        #     dtype='auto',
+        #     # max_new_tokens=32,
+        #     temperature=0.3,
+        #     top_p=0.8,
+        #     top_k=30,
+        #     frequency_penalty=0.3,
+        #     vllm_kwargs={
+        #         # 'swap_space': 1,
+        #         "gpu_memory_utilization": 0.95,
+        #         'max_model_len': 4096,
+        #     },
+        # )
+
+        SYSTEM_PROMPT = """You are an AI assistant that answers questions in a friendly manner, based on the given source documents. Here are some rules you always follow:
+        - Generate human readable output, avoid creating output with gibberish text.
+        - Generate only the requested output, don't include any other language before or after the requested output.
+        - Never say thank you, that you are happy to help, that you are an AI agent, etc. Just answer directly.
+        - Generate professional language typically used in business documents in North America.
+        - Never generate offensive or foul language.
+        """
+        SYSTEM_PROMPT += '\n' + SYSTEM_PROMPT_SEMICONDUCTOR_ROLE
+
+        query_wrapper_prompt = PromptTemplate(
+            "<|im_start|>system\n" + SYSTEM_PROMPT +
+            "\n\n<|im_end|>\n<|im_start|>user\n{query_str}<|im_end|>\n<|im_start|>assistant\n"
+        )
+
+        llm = HuggingFaceLLM(
+            context_window=4096,
+            max_new_tokens=2048,
+            generate_kwargs={
+                "temperature": 0.0,
+                "do_sample": False
+            },
+            query_wrapper_prompt=query_wrapper_prompt,
+            tokenizer_name=local_model_path,
+            model_name=local_model_path,
+            device_map="auto",
+            # change these settings below depending on your GPU
+            model_kwargs={
+                "torch_dtype": torch.float16,
+                "load_in_4bit": True
+            },
+        )
+
+    embed_model = HuggingFaceEmbedding(model_name='BAAI/bge-m3')
     service_context = ServiceContext.from_defaults(
         llm=llm,
-        # embed_model=embed_model
+        embed_model=embed_model,
         chunk_size=chunk_size,
-        system_prompt=SYSTEM_PROMPT)
+        system_prompt=SYSTEM_PROMPT_SEMICONDUCTOR_ROLE)
 
     Settings.llm = llm
+    Settings.embed_model = embed_model
 
     return service_context
 
@@ -99,7 +153,7 @@ def load_index(documents: List[Document], storage_context: StorageContext,
                                         verbose=True,
                                         include_embeddings=True,
                                         show_progress=True)
-    except:
+    except Exception:
         print('load index failed')
         return None
 
@@ -123,8 +177,8 @@ def load_multi_doc_index(documents: List[List[Document]],
                 verbose=True,
                 include_embeddings=True,
                 show_progress=True)
-        except:
-            print(f'load index:{context.__class__.__name__} failed')
+        except Exception:
+            print(f'load {context.__class__.__name__} failed')
 
         print(f'Loaded {context.__class__.__name__} successfully!')
 
@@ -153,14 +207,16 @@ def load_engine(kg_index: KnowledgeGraphIndex,
         return vector_index.as_query_engine()
     elif mode == 'custom':
         vector_index = VectorStoreIndex.from_documents(documents)
-        vector_retriever = VectorIndexRetriever(index=vector_index)
+        vector_retriever = VectorIndexRetriever(index=vector_index,
+                                                similarity_top_k=20)
 
         kg_retriever = KGTableRetriever(index=kg_index,
                                         retriever_mode='hybrid',
-                                        similarity_top_k=10,
-                                        graph_store_query_depth=5,
+                                        similarity_top_k=20,
+                                        graph_store_query_depth=10,
+                                        num_chunks_per_query=20,
                                         include_text=True,
-                                        use_global_node_triplets=False)
+                                        use_global_node_triplets=True)
 
         custom_retriever = CustomRetriever(vector_retriever,
                                            kg_retriever,
