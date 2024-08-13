@@ -167,7 +167,6 @@ def initialize_rag_settings(
         ])
 
     return RouterQueryEngine(
-        # selector=LLMMultiSelector.from_defaults(llm=OpenAI(temperature=0.1, model='gpt-3.5-turbo')),
         # selector=LLMMultiSelector.from_defaults(),
         selector=CustomMultiSelector(),
         query_engine_tools=engine_tools,
