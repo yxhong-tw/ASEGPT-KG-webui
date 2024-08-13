@@ -134,7 +134,7 @@ def initialize_rag_settings(
     documents = load_multi_docs(doc_paths)
 
     service_context = set_global_service(
-        using_openai_gpt=True,
+        using_openai_gpt=False,
         chunk_size=4096,
         local_model_path=generator_model_path,
         local_tokenizer_path=generator_tokenizer_path)
