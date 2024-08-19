@@ -33,7 +33,7 @@ app.add_middleware(
 )
 app.cache = {}
 
-config = load_config('./configs/default.yaml')
+config = load_config(f'{os.getcwd()}/app/configs/default.yaml')
 config = set_rag_default_config(config)
 
 
@@ -50,7 +50,7 @@ def initialize_rag_settings(
     documents = load_multi_docs(doc_paths)
 
     service_context = set_global_service(
-        using_openai_gpt=False,
+        using_openai_gpt=True,
         chunk_size=4096,
         local_model_path=generator_model_path,
         local_tokenizer_path=generator_tokenizer_path)
