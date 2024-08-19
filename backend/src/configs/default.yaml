@@ -1,0 +1,19 @@
+data:
+  document_paths:
+    - 'processed_中美貿易戰禁令_202306-202401.json'
+    - 'processed_矽光子發展_202306-202401.json'
+    - 'processed_AI晶片發展_0-500_202306-202401.json'
+    - 'processed_semiconductor_0-30000_articles_20230901-20230921.json'
+nebula_graph:
+  space_names:
+    - 'asegptkg_rag_war'
+    - 'asegptkg_rag_silicon'
+    - 'asegptkg_rag_ai'
+    - 'asegptkg_rag_semiconductor'
+  persist_dirs:
+    - '/app/storages/war'
+    - '/app/storages/silicon'
+    - '/app/storages/ai'
+    - '/app/storages/semiconductor'
+rag:
+  generator_model_path: '/app/models/rag_it_chatml_qlora_lr6e-4_wd5e-3-trainset_20240608_multi_task_instruction_tuning_no_response_synthesis_rag_cp_freeze-top25layers-lm_head_chat-vector/'
