@@ -9,7 +9,6 @@ from llama_index.core.selectors import LLMMultiSelector
 from llama_index.llms.openai import OpenAI
 
 from .llama_index_server import (
-    RAG_QUERY_ENGINE_TOOLS_MAPPING,
     CustomMultiSelector,
     connect_to_nebula_graph,
     convert_to_query_engine_tool,
@@ -75,11 +74,11 @@ def initialize_rag_settings(
     engine_tools = convert_to_query_engine_tool(
         engines,
         names=[
-            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name]['name']
+            config['rag']['query_engine_tools'][space_name]['name']
             for space_name in space_names
         ],
         descriptions=[
-            RAG_QUERY_ENGINE_TOOLS_MAPPING[space_name]['description']
+            config['rag']['query_engine_tools'][space_name]['description']
             for space_name in space_names
         ])
 
