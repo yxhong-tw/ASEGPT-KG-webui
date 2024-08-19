@@ -1,6 +1,7 @@
 fastapi[all]
 python-jose[cryptography]
 yapf
+pyyaml
 python-dotenv
 pyvis
 networkx
