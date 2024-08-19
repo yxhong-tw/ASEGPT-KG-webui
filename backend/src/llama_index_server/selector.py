@@ -49,31 +49,6 @@ class CustomMultiSelector(BaseSelector):
 
         return MultiSelection(selections=selections)
 
-        # return 一定要有ind、inds、reason、reasons
-        # 每個selections都是一個SingleSelection
-        # 這邊可以自己寫一些規則，來判斷是否要選擇這個choice
-        # 例如description跟question的相似度
-
-        # 原本的作法
-        '''
-        # prepare input
-        context_list = _build_choices_text(choices)
-        max_outputs = self._max_outputs or len(choices)
-
-        prediction = self._llm.predict(
-            prompt=self._prompt,
-            num_choices=len(choices),
-            max_outputs=max_outputs,
-            context_list=context_list,
-            query_str=query.query_str,
-        )
-
-        assert self._prompt.output_parser is not None
-        parsed = self._prompt.output_parser.parse(prediction)
-
-        return _structured_output_to_selector_result(parsed)
-        '''
-
     async def _aselect(self, choices: Sequence[ToolMetadata],
                        query: QueryBundle) -> MultiSelection:
         results = await self._select(choices, query)
