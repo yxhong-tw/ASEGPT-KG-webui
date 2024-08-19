@@ -6,7 +6,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from llama_index.core.query_engine import BaseQueryEngine, RouterQueryEngine
 from llama_index.core.selectors import LLMMultiSelector
-from llama_index.core.tools import QueryEngineTool
 from llama_index.llms.openai import OpenAI
 
 from .llama_index_server import (
@@ -85,8 +84,10 @@ def initialize_rag_settings(
         ])
 
     return RouterQueryEngine(
-        # selector=LLMMultiSelector.from_defaults(),
-        selector=CustomMultiSelector(),
+        # selector=LLMMultiSelector.from_defaults(
+        #     OpenAI(model='gpt-3.5-turbo')),  # 使用 OpenAI 的模型幫忙做選擇
+        # selector=LLMMultiSelector.from_defaults(), # 透過 LLM 自行選擇
+        selector=CustomMultiSelector(), # 使用簡單的方法選擇
         query_engine_tools=engine_tools,
         service_context=service_context), engines
 
