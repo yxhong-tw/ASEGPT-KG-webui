@@ -149,7 +149,5 @@ __pycache__/
 *.sln
 *.sw?
 
-# Models, RAG storages and row data
-backend/*/models/
-backend/*/storages/
+# Backend data
 backend/*/data/*.json
