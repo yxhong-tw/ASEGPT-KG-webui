@@ -16,4 +16,4 @@ nebula_graph:
     - '/app/storages/ai'
     - '/app/storages/semiconductor'
 rag:
-  generator_model_path: '/app/models/rag_it_chatml_qlora_lr6e-4_wd5e-3-trainset_20240608_multi_task_instruction_tuning_no_response_synthesis_rag_cp_freeze-top25layers-lm_head_chat-vector/'
+  generator_model_path: '/app/models/rag_ift_qlora_chat-vector/'
