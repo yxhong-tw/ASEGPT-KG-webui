@@ -27,5 +27,7 @@ def set_rag_default_config(config):
         config['rag']['generator_model_path'] = ''
     if 'generator_tokenizer_path' not in config['rag']:
         config['rag']['generator_tokenizer_path'] = ''
+    if 'query_engine_tools' not in config['rag']:
+        config['rag']['query_engine_tools'] = {}
 
     return config
