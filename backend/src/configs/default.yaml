@@ -17,6 +17,7 @@ nebula_graph:
     - '/app/storages/semiconductor'
 rag:
   generator_model_path: '/app/models/rag_ift_qlora_chat-vector/'
+  using_openai_gpt: false
   query_engine_tools:
     asegptkg_rag_war:
       name: 'war_query_engine_tool'

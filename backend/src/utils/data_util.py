@@ -29,5 +29,7 @@ def set_rag_default_config(config):
         config['rag']['generator_tokenizer_path'] = ''
     if 'query_engine_tools' not in config['rag']:
         config['rag']['query_engine_tools'] = {}
+    if 'using_openai_gpt' not in config['rag']:
+        config['rag']['using_openai_gpt'] = False
 
     return config

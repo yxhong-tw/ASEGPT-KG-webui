@@ -47,22 +47,20 @@ def initialize_rag_settings(
 
     print(f'Using GPU: {torch.cuda.is_available()}')
 
-    documents = load_multi_docs(doc_paths)
+    documents, row_docs = load_multi_docs(doc_paths)
 
     service_context = set_global_service(
-        using_openai_gpt=True,
+        using_openai_gpt=config['rag']['using_openai_gpt'],
         chunk_size=4096,
         local_model_path=generator_model_path,
         local_tokenizer_path=generator_tokenizer_path)
     stores = [load_store(space_name) for space_name in space_names]
-    storages = [
-        load_storage(store=s, persist_dir=p)
-        for s, p in zip(stores, persist_dirs)
-    ]
 
     indices = load_multi_doc_index(documents=documents,
-                                   storage_contexts=storages,
-                                   space_names=space_names)
+                                   row_docs=row_docs,
+                                   stores=stores,
+                                   space_names=space_names,
+                                   persist_dirs=persist_dirs)
     engines = [
         load_engine(i,
                     mode='custom',
@@ -86,7 +84,7 @@ def initialize_rag_settings(
         # selector=LLMMultiSelector.from_defaults(
         #     OpenAI(model='gpt-3.5-turbo')),  # 使用 OpenAI 的模型幫忙做選擇
         # selector=LLMMultiSelector.from_defaults(), # 透過 LLM 自行選擇
-        selector=CustomMultiSelector(), # 使用簡單的方法選擇
+        selector=CustomMultiSelector(),  # 使用簡單的方法選擇
         query_engine_tools=engine_tools,
         service_context=service_context), engines
 
@@ -99,12 +97,11 @@ RAG_QUERY_ENGINE, QUERY_ENGINES = initialize_rag_settings(
         for path in config['nebula_graph']['persist_dirs']
     ],
     generator_model_path=os.path.join(os.getcwd(),
-                                      config['rag']['generator_model_path']),
+                                      config['rag']['generator_model_path'])
+    if not config['rag']['using_openai_gpt'] else
+    config['rag']['generator_model_path'],
     generator_tokenizer_path=os.path.join(
         os.getcwd(), config['rag']['generator_tokenizer_path']))
-
-WAR_QUERY_ENGINE, SILICON_QUERY_ENGINE, \
-    AI_QUERY_ENGINE, SEMICONDUCTOR_QUERY_ENGINE = QUERY_ENGINES
 
 
 @app.post('/query')
